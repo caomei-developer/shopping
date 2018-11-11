@@ -6,6 +6,14 @@
 
     <include layout="@layout/home_top_search_layout" />
 
+    <LinearLayout
+        android:id="@+id/add_hot_hit_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
     <com.shopping.view.recyclerview.view.RefreshRecyclerView
         android:id="@+id/refresh_recyclerView"
         android:layout_width="match_parent"

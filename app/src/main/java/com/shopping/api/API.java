@@ -17,4 +17,7 @@ public interface API {
     @GET("/index.php?app=search2&")
     Observable<SearchBean> getLoadSearchList(@Query("keyword")String search, @Query("page") int page);
 
+    @GET("/index.php?app=search_keyword")
+    Observable<List<String>> getHotWords();
+
 }

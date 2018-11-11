@@ -3,7 +3,6 @@ package com.shopping.shopping;
 
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,17 +15,21 @@ import com.shopping.base.CommonBaseFragment;
 import com.shopping.shopping.adapter.SearchAdapter;
 import com.shopping.shopping.model.SearchBean;
 import com.shopping.shopping.presenter.ShoppingPresenter;
+import com.shopping.shopping.view.HotWordsLayout;
 import com.shopping.shopping.view.ShoppingSearchView;
 import com.shopping.util.StringUtils;
 import com.shopping.view.recyclerview.view.RefreshRecyclerView;
 import com.shopping.view.recyclerview.view.adapter.Action;
 
+import java.util.List;
+
 
 public class ShoppingSearchFragment extends CommonBaseFragment<ShoppingPresenter> implements ShoppingSearchView, View.OnClickListener {
     private RefreshRecyclerView refreshRecyclerView;
-    private LinearLayout searchBtn;
+    private LinearLayout searchBtn ,addHotHitLayout;
     private TextView searchKey;
     private SearchAdapter searchAdapter;
+    private HotWordsLayout hotWordsLayout;
     private int page = 1;
 
     @Override
@@ -37,6 +40,7 @@ public class ShoppingSearchFragment extends CommonBaseFragment<ShoppingPresenter
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        addHotHitLayout = view.findViewById(R.id.add_hot_hit_layout);
         refreshRecyclerView = view.findViewById(R.id.refresh_recyclerView);
         searchBtn = view.findViewById(R.id.search_btn);
         searchKey = view.findViewById(R.id.search_key);
@@ -48,7 +52,7 @@ public class ShoppingSearchFragment extends CommonBaseFragment<ShoppingPresenter
         refreshRecyclerView.addRefreshAction(new Action() {
             @Override
             public void onAction() {
-                mvpPresenter.checkObtainMode(ShoppingPresenter.isType.PULL_UP_REFRESH,"手机",1);
+                mvpPresenter.checkObtainMode(ShoppingPresenter.isType.PULL_UP_REFRESH,keyWord(),1);
                 refreshRecyclerView.getSwipeRefreshLayout().setRefreshing(false);
             }
         });
@@ -56,9 +60,18 @@ public class ShoppingSearchFragment extends CommonBaseFragment<ShoppingPresenter
             @Override
             public void onAction() {
                 page ++;
-                mvpPresenter.checkObtainMode(ShoppingPresenter.isType.PULL_DOWN,"手机",page);
+                mvpPresenter.checkObtainMode(ShoppingPresenter.isType.PULL_DOWN,keyWord(),page);
             }
         });
+
+        hotWordsLayout = new HotWordsLayout(getActivity());
+        hotWordsLayout.setClickItem(new HotWordsLayout.ClickItem() {
+            @Override
+            public void onClick(String value) {
+                mvpPresenter.getLoadGoodsSearch(ShoppingPresenter.isType.LOADING, value, 1);
+            }
+        });
+        addHotHitLayout.addView(hotWordsLayout);
     }
 
     private String keyWord(){
@@ -73,7 +86,7 @@ public class ShoppingSearchFragment extends CommonBaseFragment<ShoppingPresenter
                 if (StringUtils.isEmpty(keyWord())) {
                     return;
                 }
-                mvpPresenter.getLoadGoodsSearch(ShoppingPresenter.isType.LOADING, "手机", 1);
+                mvpPresenter.getLoadGoodsSearch(ShoppingPresenter.isType.LOADING, keyWord(), 1);
                 break;
         }
     }
@@ -118,7 +131,16 @@ public class ShoppingSearchFragment extends CommonBaseFragment<ShoppingPresenter
     }
 
     @Override
+    public void getHotWords(List<String> list) {
+        if (list == null || list.isEmpty() || list.size() == 0 ){
+            return;
+        }
+        hotWordsLayout.serData(list);
+    }
+
+    @Override
     public void getDataFail(String msg) {
+
     }
 
     @Override
@@ -138,4 +160,5 @@ public class ShoppingSearchFragment extends CommonBaseFragment<ShoppingPresenter
             searchKey.setText("");
         }
     }
+
 }

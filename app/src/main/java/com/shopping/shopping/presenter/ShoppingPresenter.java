@@ -52,6 +52,26 @@ public class ShoppingPresenter extends BasePresenter<ShoppingSearchView> {
         });
     }
 
+    public void getHotWords(){
+        addSubscription(getApi().getHotWords(), new ApiCallback<List<String>>() {
+            @Override
+            public void onSuccess(List<String> model) {
+            mvpView.getHotWords(model);
+            }
+
+            @Override
+            public void onFailure(String msg) {
+                mvpView.getDataFail(msg);
+            }
+
+            @Override
+            public void onFinish() {
+                mvpView.hideLoading();
+            }
+        });
+    }
+
+
     private API getApi(){
         return  RetrofitHelper.retrofit(API.API_BASE_URL).create(API.class);
     }

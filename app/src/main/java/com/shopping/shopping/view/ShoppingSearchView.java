@@ -16,5 +16,7 @@ public interface ShoppingSearchView extends BaseView{
 
     void getPullUpRefresh(SearchBean searchResponse);
 
+    void getHotWords(List<String> list);
+
 }
 
